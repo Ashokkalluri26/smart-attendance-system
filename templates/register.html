@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card registration-card">
+                <div class="card-header">
+                    <h3 class="text-center mb-0">Student Registration</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please enter your full name.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select your department.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="branch" class="form-label">Branch/Section</label>
+                            <input type="text" class="form-control" id="branch" name="branch" required>
+                            <div class="invalid-feedback">
+                                Please enter your branch or section.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="roll_number" class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" id="roll_number" name="roll_number" required>
+                            <div class="invalid-feedback">
+                                Please enter your roll number.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="photo" class="form-label">Photo</label>
+                            <div class="photo-upload-container">
+                                <input type="file" class="form-control" id="photo" name="photo" accept="image/*" required>
+                                <div class="invalid-feedback">
+                                    Please upload your photo.
+                                </div>
+                                <div class="photo-preview mt-2" style="display: none;">
+                                    <img id="preview" src="#" alt="Preview" class="img-thumbnail">
+                                </div>
+                                <div class="photo-guidelines mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Please upload a clear front-facing photo. The system will use this for attendance verification.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Photo preview
+    document.getElementById('photo').addEventListener('change', function(e) {
+        const preview = document.getElementById('preview');
+        const previewContainer = document.querySelector('.photo-preview');
+        const file = e.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            previewContainer.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %} 

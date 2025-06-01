@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card attendance-card">
+                <div class="card-header">
+                    <h3 class="text-center mb-0">Admin: Mark Attendance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <p class="lead">Select a user and capture their attendance</p>
+                        <div class="form-group mb-4">
+                            <select id="userSelect" class="form-select form-select-lg">
+                                <option value="">Select User</option>
+                                {% for user in users %}
+                                <option value="{{ user.roll_number }}">{{ user.name }} ({{ user.roll_number }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div id="webcam-container" class="webcam-container">
+                            <video id="webcam" width="640" height="480" autoplay playsinline></video>
+                            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+                            <div class="camera-overlay">
+                                <div class="face-guide"></div>
+                            </div>
+                        </div>
+                        <div id="webcam-error" class="alert alert-danger mt-3" style="display: none;">
+                            Error accessing webcam. Please make sure you have granted camera permissions.
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button id="captureBtn" class="btn btn-primary btn-lg pulse-button" disabled>
+                            <i class="fas fa-camera me-2"></i>Mark Attendance
+                        </button>
+                    </div>
+                    <div id="result" class="alert mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('captureBtn');
+    const resultDiv = document.getElementById('result');
+    const webcamError = document.getElementById('webcam-error');
+    const userSelect = document.getElementById('userSelect');
+    let stream = null;
+
+    function hasGetUserMedia() {
+        return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+    
+    async function startWebcam() {
+        if (!hasGetUserMedia()) {
+            webcamError.textContent = 'Your browser does not support webcam access.';
+            webcamError.style.display = 'block';
+            return;
+        }
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: 'user'
+                } 
+            });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                video.play();
+                updateCaptureButton();
+            };
+        } catch (err) {
+            console.error('Error accessing webcam:', err);
+            webcamError.style.display = 'block';
+            video.style.display = 'none';
+        }
+    }
+
+    function updateCaptureButton() {
+        captureBtn.disabled = !stream || !userSelect.value;
+    }
+
+    userSelect.addEventListener('change', updateCaptureButton);
+    
+    captureBtn.addEventListener('click', async () => {
+        if (!stream || !userSelect.value) {
+            alert('Please select a user and ensure camera access is granted.');
+            return;
+        }
+
+        try {
+            captureBtn.disabled = true;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            const response = await fetch('/admin_capture_attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    image: imageData,
+                    roll_number: userSelect.value
+                })
+            });
+            
+            const result = await response.json();
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = result.message;
+            resultDiv.className = `alert alert-${result.status === 'success' ? 'success' : 'danger'} mt-3 fade-in`;
+            
+            if (result.status === 'success') {
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 3000);
+            }
+        } catch (err) {
+            console.error('Error marking attendance:', err);
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Error marking attendance. Please try again.';
+            resultDiv.className = 'alert alert-danger mt-3 fade-in';
+        } finally {
+            captureBtn.disabled = false;
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    });
+    
+    startWebcam();
+</script>
+{% endblock %} 

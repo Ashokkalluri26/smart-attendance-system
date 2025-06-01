@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Smart Attendance Management System</h1>
+        <p class="hero-subtitle">Revolutionizing attendance tracking with facial recognition technology</p>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body">
+                    <i class="fas fa-camera feature-icon"></i>
+                    <h3>Face Recognition</h3>
+                    <p>Advanced facial recognition technology for accurate and quick attendance marking.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h3>Real-time Tracking</h3>
+                    <p>Instant attendance updates and real-time monitoring of student presence.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body">
+                    <i class="fas fa-chart-bar feature-icon"></i>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Comprehensive analytics and reporting for attendance patterns and trends.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container mt-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="stats-counter">{{ total_users }}</div>
+                    <div class="stats-label">Registered Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="stats-counter">{{ today_attendance }}</div>
+                    <div class="stats-label">Today's Attendance</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="stats-counter">100%</div>
+                    <div class="stats-label">Accuracy Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Add Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %} 
