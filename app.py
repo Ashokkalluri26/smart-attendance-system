@@ -20,7 +20,7 @@ app.secret_key = os.urandom(24)  # More secure secret key
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '1234',  # Change this to your MySQL password
+    'password': 'ashok',  # Change this to your MySQL password
     'database': 'attendance_system'
 }
 
