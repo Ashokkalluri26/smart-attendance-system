@@ -61,10 +61,6 @@ DB_PASSWORD=your_password
 DB_NAME=attendance_system
 ```
 
-## Default Admin Credentials
-
-- Username: admin
-- Password: admin123
 
 ## Project Structure
 
